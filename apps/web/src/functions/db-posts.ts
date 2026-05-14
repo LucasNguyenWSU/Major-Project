@@ -71,6 +71,22 @@ export async function getActivePosts() {
   return rows.map(toPost);
 }
 
+export async function getActivePostsInitial(take: number = 10) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+    take,
+  });
+  return rows.map(toPost);
+}
+
+export async function getActivePostsCount() {
+  return client.db.post.count({
+    where: { active: true },
+  });
+}
+
 export async function getActivePostsByCategorySlug(slug: string) {
   const rows = await client.db.post.findMany({
     where: { active: true },
@@ -107,7 +123,7 @@ export async function getActivePostsByYearMonth(year: number, month: number) {
   return rows
     .map(toPost)
     .filter((post) => {
-      const d = post.date;
+      const d = new Date(post.date);
       return d.getFullYear() === year && d.getMonth() + 1 === month;
     });
 }
@@ -131,4 +147,132 @@ export async function searchActivePosts(query: string) {
       post.title.toLowerCase().includes(lower) ||
       post.description.toLowerCase().includes(lower),
   );
+}
+
+export async function searchActivePostsInitial(query: string, take: number = 10) {
+  const trimmed = query.trim();
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  const posts = rows.map(toPost);
+
+  let filtered = posts;
+  if (trimmed) {
+    const lower = trimmed.toLowerCase();
+    filtered = posts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(lower) ||
+        post.description.toLowerCase().includes(lower),
+    );
+  }
+
+  return filtered.slice(0, take);
+}
+
+export async function searchActivePostsCount(query: string) {
+  const trimmed = query.trim();
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  const posts = rows.map(toPost);
+
+  if (!trimmed) {
+    return posts.length;
+  }
+
+  const lower = trimmed.toLowerCase();
+  return posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(lower) ||
+      post.description.toLowerCase().includes(lower),
+  ).length;
+}
+
+export async function getActivePostsByCategorySlugInitial(slug: string, take: number = 10) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) => toUrlPath(post.category) === slug)
+    .slice(0, take);
+}
+
+export async function getActivePostsByCategorySlugCount(slug: string) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) => toUrlPath(post.category) === slug).length;
+}
+
+export async function getActivePostsByTagSlugInitial(slug: string, take: number = 10) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) =>
+      post.tags
+        .split(",")
+        .map((t) => t.trim())
+        .some((t) => toUrlPath(t) === slug),
+    )
+    .slice(0, take);
+}
+
+export async function getActivePostsByTagSlugCount(slug: string) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) =>
+      post.tags
+        .split(",")
+        .map((t) => t.trim())
+        .some((t) => toUrlPath(t) === slug),
+    ).length;
+}
+
+export async function getActivePostsByYearMonthInitial(year: number, month: number, take: number = 10) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) => {
+      const d = new Date(post.date);
+      return d.getFullYear() === year && d.getMonth() + 1 === month;
+    })
+    .slice(0, take);
+}
+
+export async function getActivePostsByYearMonthCount(year: number, month: number) {
+  const rows = await client.db.post.findMany({
+    where: { active: true },
+    include: { _count: { select: { likes: true } } },
+    orderBy: { date: "desc" },
+  });
+  return rows
+    .map(toPost)
+    .filter((post) => {
+      const d = new Date(post.date);
+      return d.getFullYear() === year && d.getMonth() + 1 === month;
+    }).length;
 }

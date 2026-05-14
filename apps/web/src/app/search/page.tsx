@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
-import { Main } from "@/components/Main";
-import { searchActivePosts } from "@/functions/db-posts";
+import { PaginatedBlogList } from "@/components/Blog/InfiniteScrollList";
+import { searchActivePostsInitial, searchActivePostsCount } from "@/functions/db-posts";
 
 export default async function Page({
   searchParams,
@@ -8,11 +8,21 @@ export default async function Page({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
-  const filtered = await searchActivePosts(q ?? "");
+  const [initialPosts, total] = await Promise.all([
+    searchActivePostsInitial(q ?? "", 10),
+    searchActivePostsCount(q ?? ""),
+  ]);
 
   return (
     <AppLayout query={q}>
-      <Main posts={filtered} />
+      <main>
+        <PaginatedBlogList 
+          initialPosts={initialPosts} 
+          total={total}
+          filterType="search"
+          query={q}
+        />
+      </main>
     </AppLayout>
   );
 }

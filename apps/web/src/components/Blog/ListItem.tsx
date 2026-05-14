@@ -1,25 +1,7 @@
 import type { Post } from "@repo/db/data";
 import { toUrlPath } from "@repo/utils/url";
 import Link from "next/link";
-
-function formatPostDate(d: Date) {
-  const day = String(d.getDate()).padStart(2, "0");
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
+import { formatPostDate } from "../../functions/dates";
 
 export function BlogListItem({ post }: { post: Post }) {
   const tagParts = post.tags
@@ -41,12 +23,14 @@ export function BlogListItem({ post }: { post: Post }) {
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <Link
-          href={`/post/${post.urlId}`}
-          className="text-primary hover:text-primaryHover text-xl font-semibold"
-        >
-          {post.title}
-        </Link>
+        <h2>
+          <Link
+            href={`/post/${post.urlId}`}
+            className="text-primary hover:text-primaryHover text-xl font-semibold"
+          >
+            {post.title}
+          </Link>
+        </h2>
         <Link
           href={`/category/${toUrlPath(post.category)}`}
           className="text-secondary hover:text-primaryHover w-fit text-sm"

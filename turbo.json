@@ -43,6 +43,10 @@
     "dev:test-3": {
       "dependsOn": ["dev:test"]
     },
+    "test-b1": {},
+    "dev:test-b1": {
+      "dependsOn": ["dev:test"]
+    },
     "all:test": {
       "dependsOn": ["test", "test-1", "test-2", "test-3"]
     },

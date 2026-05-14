@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
-import { Main } from "@/components/Main";
-import { getActivePostsByYearMonth } from "@/functions/db-posts";
+import { PaginatedBlogList } from "@/components/Blog/InfiniteScrollList";
+import { getActivePostsByYearMonthInitial, getActivePostsByYearMonthCount } from "@/functions/db-posts";
 
 export default async function Page({
   params,
@@ -10,13 +10,25 @@ export default async function Page({
   const { year, month } = await params;
   const y = Number(year);
   const m = Number(month);
-  const filtered = Number.isFinite(y) && Number.isFinite(m)
-    ? await getActivePostsByYearMonth(y, m)
-    : [];
+  
+  const [initialPosts, total] = Number.isFinite(y) && Number.isFinite(m)
+    ? await Promise.all([
+        getActivePostsByYearMonthInitial(y, m, 10),
+        getActivePostsByYearMonthCount(y, m),
+      ])
+    : [[], 0];
 
   return (
     <AppLayout sidebar={{ selectedYear: year, selectedMonth: month }}>
-      <Main posts={filtered} />
+      <main>
+        <PaginatedBlogList 
+          initialPosts={initialPosts} 
+          total={total}
+          filterType="history"
+          year={y}
+          month={m}
+        />
+      </main>
     </AppLayout>
   );
 }

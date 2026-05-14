@@ -1,27 +1,9 @@
 import type { Post } from "@repo/db/data";
 import { toUrlPath } from "@repo/utils/url";
+import { formatPostDate } from "../../functions/dates";
 import { marked } from "marked";
 import Link from "next/link";
 import { LikeButton } from "./LikeButton";
-
-function formatPostDate(d: Date) {
-  const day = String(d.getDate()).padStart(2, "0");
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
 
 export async function BlogDetail({ post }: { post: Post }) {
   const bodyHtml = await marked.parse(post.content);
