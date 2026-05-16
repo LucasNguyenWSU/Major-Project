@@ -13,11 +13,14 @@ type Props = {
   posts: Post[];
 };
 
+const PAGE_SIZE = 5;
+
 export function AdminList({ posts }: Props) {
   const router = useRouter();
   const [filterContent, setFilterContent] = useState("");
   const [filterTag, setFilterTag] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [showActiveOnly, setShowActiveOnly] = useState(false);
@@ -89,6 +92,17 @@ export function AdminList({ posts }: Props) {
     return result;
   }, [posts, filterContent, filterTag, filterDate, sortBy, showActiveOnly]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  function resetPage() {
+    setPage(1);
+  }
+
   return (
     <section className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -113,7 +127,10 @@ export function AdminList({ posts }: Props) {
           <span className="text-secondary">Filter by Content:</span>
           <input
             value={filterContent}
-            onChange={(e) => setFilterContent(e.target.value)}
+            onChange={(e) => {
+              setFilterContent(e.target.value);
+              resetPage();
+            }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400 dark:border-gray-700 dark:bg-gray-950"
           />
         </label>
@@ -122,7 +139,10 @@ export function AdminList({ posts }: Props) {
           <span className="text-secondary">Filter by Tag:</span>
           <input
             value={filterTag}
-            onChange={(e) => setFilterTag(e.target.value)}
+            onChange={(e) => {
+              setFilterTag(e.target.value);
+              resetPage();
+            }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400 dark:border-gray-700 dark:bg-gray-950"
           />
         </label>
@@ -131,7 +151,10 @@ export function AdminList({ posts }: Props) {
           <span className="text-secondary">Filter by Date Created:</span>
           <input
             value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
+            onChange={(e) => {
+              setFilterDate(e.target.value);
+              resetPage();
+            }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400 dark:border-gray-700 dark:bg-gray-950"
           />
         </label>
@@ -140,7 +163,10 @@ export function AdminList({ posts }: Props) {
           <span className="text-secondary">Sort By:</span>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            onChange={(e) => {
+              setSortBy(e.target.value as SortOption);
+              resetPage();
+            }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400 dark:border-gray-700 dark:bg-gray-950"
           >
             <option value="title-asc">Title Ascending</option>
@@ -154,7 +180,10 @@ export function AdminList({ posts }: Props) {
           <input
             type="checkbox"
             checked={showActiveOnly}
-            onChange={(e) => setShowActiveOnly(e.target.checked)}
+            onChange={(e) => {
+              setShowActiveOnly(e.target.checked);
+              resetPage();
+            }}
             className="h-4 w-4 rounded border-gray-300"
           />
           <span className="text-secondary">Show Active Posts Only</span>
@@ -168,7 +197,7 @@ export function AdminList({ posts }: Props) {
       )}
 
       <div className="space-y-4">
-        {filtered.map((post) => {
+        {paginated.map((post) => {
           const tags = post.tags
             .split(",")
             .map((t) => t.trim())
@@ -250,6 +279,33 @@ export function AdminList({ posts }: Props) {
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <nav
+          aria-label="Pagination"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-4 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setPage((value) => Math.max(1, value - 1))}
+            className="rounded-lg border border-gray-300 px-3 py-2 font-medium disabled:opacity-50 dark:border-gray-700"
+          >
+            Previous
+          </button>
+          <span className="text-secondary" data-test-id="admin-page-indicator">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+            className="rounded-lg border border-gray-300 px-3 py-2 font-medium disabled:opacity-50 dark:border-gray-700"
+          >
+            Next
+          </button>
+        </nav>
+      )}
     </section>
   );
 }

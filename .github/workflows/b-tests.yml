@@ -1,0 +1,50 @@
+name: Major Project Test
+
+"on":
+  - push
+  - workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  b-tests:
+    name: Major Project Test
+    runs-on: ubuntu-latest
+    env:
+      E2E: true
+      CI: true
+      DATABASE_URL: file:./dev.db
+      PASSWORD: 123
+      JWT_SECRET: secret
+      SKIP_ENV_VALIDATION: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.2.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright Browsers
+        working-directory: tests/playwright
+        run: pnpm playwright install chromium --with-deps
+
+      - name: Push Database
+        run: pnpm --filter @repo/db db:push
+
+      - name: Build the project
+        run: pnpm turbo build
+
+      - name: Run Major Project Tests
+        run: pnpm turbo test-b1

@@ -5,23 +5,19 @@ import { test as setup } from "@playwright/test";
 // Delete the code block below if you are not using it
 ////////////////////////////////////////
 
-setup(
-  "authenticate assignment 2",
-  { tag: "@a2" },
-  async ({ playwright }) => {
-    const authFile = ".auth/user.json";
-    const apiContext = await playwright.request.newContext();
+setup("authenticate assignment 2", { tag: "@a2" }, async ({ playwright }) => {
+  const authFile = ".auth/user.json";
+  const apiContext = await playwright.request.newContext();
 
-    await apiContext.post("/api/auth", {
-      data: JSON.stringify({ password: "123" }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  await apiContext.post("/api/auth", {
+    data: JSON.stringify({ password: "123" }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-    await apiContext.storageState({ path: authFile });
-  },
-);
+  await apiContext.storageState({ path: authFile });
+});
 
 ////////////////////////////////////////////////////////
 // Authentication for Assignment 3
@@ -29,8 +25,8 @@ setup(
 ////////////////////////////////////////////////////////
 
 setup(
-  "authenticate assignment 3",
-  { tag: "@a3" },
+  "authenticate assignment 3 and major project",
+  { tag: ["@a3", "@b1"] },
   async ({ playwright }) => {
     const authFile = ".auth/user.json";
 
