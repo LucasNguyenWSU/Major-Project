@@ -9,11 +9,13 @@
     "test-2": "pnpm playwright test --grep \"@a2\"",
     "test-3": "pnpm playwright test --grep \"@a3\"",
     "test-b1": "pnpm playwright test --grep \"@b1\"",
+    "test-b2": "pnpm playwright test --grep \"@b2\"",
     "ui": "pnpm playwright test --ui",
     "dev:test-1": "pnpm playwright test --ui --grep \"@a1\"",
     "dev:test-2": "pnpm playwright test --ui --grep \"@a1|@a2\"",
     "dev:test-3": "pnpm playwright test --ui --grep \"@a1|@a2|@a3\"",
-    "dev:test-b1": "pnpm playwright test --ui --grep \"@b1\""
+    "dev:test-b1": "pnpm playwright test --ui --grep \"@b1\"",
+    "dev:test-b2": "pnpm playwright test --ui --grep \"@b2\""
   },
   "keywords": [],
   "author": "",

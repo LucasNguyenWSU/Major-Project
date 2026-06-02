@@ -5,6 +5,11 @@ import { marked } from "marked";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  RichTextEditor,
+  type RichTextEditorHandle,
+  type RichTextSelection,
+} from "./RichTextEditor";
 
 type Props =
   | {
@@ -24,6 +29,25 @@ type Errors = {
   tags?: string;
 };
 
+function looksLikeHtml(value: string) {
+  return /<\/?[a-z][\s\S]*>/i.test(value);
+}
+
+function isBlankContent(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed || trimmed === "<p><br></p>") {
+    return true;
+  }
+
+  const textOnly = trimmed
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+
+  return looksLikeHtml(trimmed) && !textOnly;
+}
+
 export function PostEditorForm(props: Props) {
   const router = useRouter();
   const post = props.mode === "edit" ? props.post : undefined;
@@ -40,8 +64,8 @@ export function PostEditorForm(props: Props) {
   const [message, setMessage] = useState<string | null>(null);
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const contentRef = useRef<HTMLTextAreaElement | null>(null);
-  const selectionRef = useRef<{ start: number; end: number } | null>(null);
+  const contentRef = useRef<RichTextEditorHandle | null>(null);
+  const selectionRef = useRef<RichTextSelection | null>(null);
 
   const previewHtml = useMemo(() => {
     return marked.parse(content || "");
@@ -61,7 +85,7 @@ export function PostEditorForm(props: Props) {
       next.description = "Description is too long. Maximum is 200 characters";
     }
 
-    if (!content.trim()) {
+    if (isBlankContent(content)) {
       next.content = "Content is required";
     }
 
@@ -132,13 +156,7 @@ export function PostEditorForm(props: Props) {
 
   function togglePreview() {
     if (!previewOpen) {
-      const textarea = contentRef.current;
-      if (textarea) {
-        selectionRef.current = {
-          start: textarea.selectionStart,
-          end: textarea.selectionEnd,
-        };
-      }
+      selectionRef.current = contentRef.current?.getSelection() ?? null;
       setPreviewOpen(true);
     } else {
       setPreviewOpen(false);
@@ -146,17 +164,17 @@ export function PostEditorForm(props: Props) {
   }
 
   useEffect(() => {
-    if (!previewOpen && selectionRef.current && contentRef.current) {
-      const { start, end } = selectionRef.current;
-      const textarea = contentRef.current;
-      textarea.focus();
-      textarea.setSelectionRange(start, end);
+    if (!previewOpen && selectionRef.current) {
+      contentRef.current?.setSelection(selectionRef.current);
     }
   }, [previewOpen]);
 
   return (
     <div className="mx-auto w-full max-w-3xl p-4">
-      <Link href="/" className="mb-3 inline-flex items-center text-sm text-primary">
+      <Link
+        href="/"
+        className="text-primary mb-3 inline-flex items-center text-sm"
+      >
         ← Back
       </Link>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -165,7 +183,9 @@ export function PostEditorForm(props: Props) {
         </h1>
 
         {showGlobalError && (
-          <p className="text-sm text-red-600">Please fix the errors before saving</p>
+          <p className="text-sm text-red-600">
+            Please fix the errors before saving
+          </p>
         )}
         {message && <p className="text-sm text-green-700">{message}</p>}
 
@@ -179,7 +199,9 @@ export function PostEditorForm(props: Props) {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full rounded border px-3 py-2 text-sm"
           />
-          {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
+          {errors.title && (
+            <p className="text-sm text-red-600">{errors.title}</p>
+          )}
         </div>
 
         <div>
@@ -211,9 +233,9 @@ export function PostEditorForm(props: Props) {
 
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <label htmlFor="content" className="text-sm">
+            <span id="content-label" className="text-sm">
               Content
-            </label>
+            </span>
             <button
               type="button"
               onClick={togglePreview}
@@ -223,12 +245,12 @@ export function PostEditorForm(props: Props) {
             </button>
           </div>
           {!previewOpen && (
-            <textarea
+            <RichTextEditor
               id="content"
+              labelledBy="content-label"
               ref={contentRef}
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-40 w-full rounded border px-3 py-2 font-mono text-sm"
+              onChange={setContent}
             />
           )}
           {previewOpen && (
@@ -238,7 +260,9 @@ export function PostEditorForm(props: Props) {
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
           )}
-          {errors.content && <p className="text-sm text-red-600">{errors.content}</p>}
+          {errors.content && (
+            <p className="text-sm text-red-600">{errors.content}</p>
+          )}
         </div>
 
         <div>
@@ -286,4 +310,3 @@ export function PostEditorForm(props: Props) {
     </div>
   );
 }
-

@@ -1,11 +1,27 @@
 import { seed } from "@repo/db/seed";
-import { expect, test } from "./fixtures";
+import { expect, test, type Page } from "./fixtures";
 
 test.beforeEach(async () => {
   await seed();
 });
 
 test.describe("ADMIN UPDATE SCREEN", () => {
+  async function typeBoldEditorContent(page: Page) {
+    await expect(page.getByTestId("rich-text-editor")).toBeVisible();
+    await expect(page.locator(".ql-toolbar.ql-snow")).toBeVisible();
+
+    const editor = page.getByLabel("Content");
+    await expect(editor).toBeVisible();
+
+    await editor.click();
+    await page.keyboard.type("B2 rich editor ");
+    await page.keyboard.press("ControlOrMeta+B");
+    await page.keyboard.type("bold content");
+    await page.keyboard.press("ControlOrMeta+B");
+
+    return editor;
+  }
+
   test(
     "Authorisation",
     {
@@ -195,6 +211,70 @@ test.describe("ADMIN UPDATE SCREEN", () => {
         "src",
         "http://example.com/image.jpg",
       );
+    },
+  );
+
+  test(
+    "Rich text editor applies bold text formatting",
+    {
+      tag: "@b2",
+    },
+    async ({ userPage }) => {
+      await userPage.goto("/posts/create");
+
+      const editor = await typeBoldEditorContent(userPage);
+
+      await expect(editor.locator("strong")).toContainText("bold content");
+    },
+  );
+
+  test(
+    "Rich text editor preview renders formatted content",
+    {
+      tag: "@b2",
+    },
+    async ({ userPage }) => {
+      await userPage.goto("/posts/create");
+
+      await typeBoldEditorContent(userPage);
+
+      await userPage.getByText("Preview").click();
+      await expect(
+        userPage.getByTestId("content-preview").locator("strong"),
+      ).toContainText("bold content");
+      await userPage.getByText("Close Preview").click();
+      await expect(userPage.getByLabel("Content")).toBeVisible();
+    },
+  );
+
+  test(
+    "Rich text editor persists formatted content after save",
+    {
+      tag: "@b2",
+    },
+    async ({ userPage }) => {
+      await userPage.goto("/posts/create");
+
+      await typeBoldEditorContent(userPage);
+
+      await userPage.getByLabel("Title").fill("B2 persisted rich editor post");
+      await userPage.getByLabel("Category").fill("React");
+      await userPage.getByLabel("Description").fill("New Description");
+      await userPage
+        .getByLabel("Image URL")
+        .fill("http://example.com/image.jpg");
+      await userPage.getByLabel("Tags").fill("Rich Text");
+      await userPage.getByText("Save").click();
+
+      await expect(
+        userPage.getByText("Post updated successfully"),
+      ).toBeVisible();
+
+      await userPage.goto("/post/b2-persisted-rich-editor-post");
+
+      await expect(
+        userPage.getByLabel("Content").locator("strong"),
+      ).toContainText("bold content");
     },
   );
 

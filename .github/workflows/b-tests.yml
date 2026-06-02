@@ -1,50 +1,77 @@
-name: Major Project Test
-
+name: Major Project Tests
 "on":
   - push
   - workflow_dispatch
-
 permissions:
+  checks: write
+  actions: read
   contents: read
-
 jobs:
-  b-tests:
-    name: Major Project Test
-    runs-on: ubuntu-latest
+  run-major-project-tests:
     env:
       E2E: true
       CI: true
       DATABASE_URL: file:./dev.db
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PASSWORD: 123
       JWT_SECRET: secret
       SKIP_ENV_VALIDATION: true
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
     steps:
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install PNPM
+      - name: Install PNPM 📦
         uses: pnpm/action-setup@v4
         with:
           version: 10.2.0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-
-      - name: Install dependencies
+      - name: Install dependencies 🧪
         run: pnpm install
-
       - name: Install Playwright Browsers
         working-directory: tests/playwright
         run: pnpm playwright install chromium --with-deps
-
-      - name: Push Database
+      - name: Push Database 📦
         run: pnpm --filter @repo/db db:push
-
-      - name: Build the project
+      - name: Build the project 🏗
         run: pnpm turbo build
 
-      - name: Run Major Project Tests
-        run: pnpm turbo test-b1
+      ####################
+      # MAJOR PROJECT TESTS
+      ####################
+
+      - name: Test Major Project B1 with Playwright
+        id: testB1
+        uses: WesternSydneyUniversity/autograding-command-grader@v2
+        continue-on-error: true
+        with:
+          working-directory: .
+          test-name: Major Project - B1
+          command: pnpm turbo test-b1
+          timeout: 10
+          max-score: 1
+
+      - name: Test Major Project B2 with Playwright
+        id: testB2
+        uses: WesternSydneyUniversity/autograding-command-grader@v2
+        continue-on-error: true
+        with:
+          working-directory: .
+          test-name: Major Project - B2
+          command: pnpm turbo test-b2
+          timeout: 10
+          max-score: 1
+
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        env:
+          TESTB1_RESULTS: "${{steps.testB1.outputs.result}}"
+          TESTB2_RESULTS: "${{steps.testB2.outputs.result}}"
+        with:
+          runners: testB1,testB2
