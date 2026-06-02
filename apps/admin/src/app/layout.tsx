@@ -1,4 +1,5 @@
 import "@repo/ui/styles.css";
+import "quill/dist/quill.snow.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
