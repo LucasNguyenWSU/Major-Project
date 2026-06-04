@@ -1,4 +1,5 @@
 import { client } from "@repo/db/client";
+import { resetPostIdSequence } from "@repo/db/seed";
 
 const paginationPosts = Array.from({ length: 12 }, (_, index) => {
   const postNumber = index + 1;
@@ -51,4 +52,6 @@ export async function seedPagination() {
       });
     }
   }
+
+  await resetPostIdSequence();
 }

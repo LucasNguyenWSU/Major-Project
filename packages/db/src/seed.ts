@@ -1,6 +1,16 @@
 import { client } from "./client.js";
 import { posts } from "./data.js";
 
+export async function resetPostIdSequence() {
+  await client.db.$queryRaw`
+    SELECT setval(
+      pg_get_serial_sequence('"Post"', 'id'),
+      COALESCE((SELECT MAX("id") FROM "Post"), 1),
+      (SELECT COUNT(*) FROM "Post") > 0
+    )
+  `;
+}
+
 export async function seed() {
   console.log("🌱 Seeding data");
   await client.db.comment.deleteMany();
@@ -35,5 +45,6 @@ export async function seed() {
       });
     }
   }
+  await resetPostIdSequence();
   return 1;
 }

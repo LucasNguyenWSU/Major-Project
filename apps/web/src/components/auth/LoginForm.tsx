@@ -45,7 +45,6 @@ export function LoginForm({ nextPath = "/" }: { nextPath?: string }) {
       setPassword("");
 
       router.push(getSafeNextPath(nextPath));
-      router.refresh();
     } finally {
       setLoading(false);
     }

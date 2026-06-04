@@ -2,6 +2,9 @@ name: Major Project Tests
 "on":
   - push
   - workflow_dispatch
+concurrency:
+  group: blog-db-tests
+  cancel-in-progress: false
 permissions:
   checks: write
   actions: read
@@ -11,7 +14,8 @@ jobs:
     env:
       E2E: true
       CI: true
-      DATABASE_URL: file:./dev.db
+      DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.TEST_DATABASE_URL_UNPOOLED }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PASSWORD: 123456
       JWT_SECRET: secret
@@ -37,8 +41,14 @@ jobs:
       - name: Install Playwright Browsers
         working-directory: tests/playwright
         run: pnpm playwright install chromium --with-deps
-      - name: Push Database 📦
-        run: pnpm --filter @repo/db db:push
+      - name: Validate database secrets
+        run: |
+          if [ -z "$DATABASE_URL" ] || [ -z "$DATABASE_URL_UNPOOLED" ]; then
+            echo "Missing TEST_DATABASE_URL or TEST_DATABASE_URL_UNPOOLED GitHub secret."
+            exit 1
+          fi
+      - name: Deploy Database Migrations 📦
+        run: pnpm --filter @repo/db db:migrate:deploy
       - name: Build the project 🏗
         run: pnpm turbo build
 
