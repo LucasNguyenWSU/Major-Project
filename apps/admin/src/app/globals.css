@@ -37,3 +37,41 @@ html {
   --color-wsu: var(--wsu);
   --color-wsu-light: var(--wsu-light);
 }
+
+.formatted-content {
+  max-width: 100%;
+}
+
+.formatted-content-body,
+.formatted-content-body * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.formatted-content-body pre,
+.formatted-content-body code {
+  white-space: pre-wrap;
+}
+
+.formatted-content-body img,
+.formatted-content-body video,
+.formatted-content-body iframe {
+  height: auto;
+  max-width: 100%;
+}
+
+.formatted-content .ql-toolbar {
+  position: relative;
+  z-index: 2;
+}
+
+.formatted-content .ql-container {
+  position: relative;
+  z-index: 1;
+}
+
+.formatted-content .ql-picker-options {
+  background: var(--background);
+  z-index: 3;
+}

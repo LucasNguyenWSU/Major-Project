@@ -256,7 +256,7 @@ export function PostEditorForm(props: Props) {
           {previewOpen && (
             <div
               data-test-id="content-preview"
-              className="rounded border p-3 text-sm"
+              className="formatted-content-body rounded border p-3 text-sm"
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
           )}
