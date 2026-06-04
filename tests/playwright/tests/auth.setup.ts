@@ -1,4 +1,4 @@
-import { test as setup } from "@playwright/test";
+import { expect, test as setup } from "@playwright/test";
 
 ////////////////////////////////////////
 // Authentication for Assignment 2
@@ -9,12 +9,13 @@ setup("authenticate assignment 2", { tag: "@a2" }, async ({ playwright }) => {
   const authFile = ".auth/user.json";
   const apiContext = await playwright.request.newContext();
 
-  await apiContext.post("/api/auth", {
+  const response = await apiContext.post("/api/auth", {
     data: JSON.stringify({ password: "123456" }),
     headers: {
       "Content-Type": "application/json",
     },
   });
+  expect(response.ok()).toBeTruthy();
 
   await apiContext.storageState({ path: authFile });
 });
@@ -32,12 +33,13 @@ setup(
 
     const apiContext = await playwright.request.newContext();
 
-    await apiContext.post("/api/auth", {
+    const response = await apiContext.post("/api/auth", {
       data: JSON.stringify({ password: "123456" }),
       headers: {
         "Content-Type": "application/json",
       },
     });
+    expect(response.ok()).toBeTruthy();
 
     await apiContext.storageState({ path: authFile });
   },

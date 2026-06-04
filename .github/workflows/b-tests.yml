@@ -13,7 +13,7 @@ jobs:
       CI: true
       DATABASE_URL: file:./dev.db
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PASSWORD: 123
+      PASSWORD: 123456
       JWT_SECRET: secret
       SKIP_ENV_VALIDATION: true
     runs-on: ubuntu-latest
