@@ -10,7 +10,7 @@ setup("authenticate assignment 2", { tag: "@a2" }, async ({ playwright }) => {
   const apiContext = await playwright.request.newContext();
 
   await apiContext.post("/api/auth", {
-    data: JSON.stringify({ password: "123" }),
+    data: JSON.stringify({ password: "123456" }),
     headers: {
       "Content-Type": "application/json",
     },
@@ -33,7 +33,7 @@ setup(
     const apiContext = await playwright.request.newContext();
 
     await apiContext.post("/api/auth", {
-      data: JSON.stringify({ password: "123" }),
+      data: JSON.stringify({ password: "123456" }),
       headers: {
         "Content-Type": "application/json",
       },

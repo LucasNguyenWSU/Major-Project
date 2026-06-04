@@ -2,7 +2,9 @@ import type { Post } from "@repo/db/data";
 import { toUrlPath } from "@repo/utils/url";
 import { marked } from "marked";
 import Link from "next/link";
+import { CommentsSection } from "../Comments/CommentsSection";
 import { LikeButton } from "./LikeButton";
+import type { Commenter, CommentNode } from "@/types/commenting";
 
 function formatPostDate(d: Date) {
   const day = String(d.getDate()).padStart(2, "0");
@@ -23,7 +25,15 @@ function formatPostDate(d: Date) {
   return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-export async function BlogDetail({ post }: { post: Post }) {
+export async function BlogDetail({
+  post,
+  comments,
+  currentCommenter,
+}: {
+  post: Post;
+  comments: CommentNode[];
+  currentCommenter: Commenter | null;
+}) {
   const bodyHtml = await marked.parse(post.content);
   const tagParts = post.tags
     .split(",")
@@ -85,6 +95,12 @@ export async function BlogDetail({ post }: { post: Post }) {
         data-test-id="content-markdown"
         className="text-primary mt-10 max-w-none [&_h1]:text-2xl [&_h2]:mt-6 [&_h2]:text-xl [&_p]:my-3"
         dangerouslySetInnerHTML={{ __html: bodyHtml }}
+      />
+
+      <CommentsSection
+        urlId={post.urlId}
+        comments={comments}
+        currentCommenter={currentCommenter}
       />
     </article>
   );

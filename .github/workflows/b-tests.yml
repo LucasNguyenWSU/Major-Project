@@ -15,7 +15,7 @@ jobs:
       E2E: true
       CI: true
       DATABASE_URL: file:./dev.db
-      PASSWORD: 123
+      PASSWORD: 123456
       JWT_SECRET: secret
       SKIP_ENV_VALIDATION: true
     steps:
@@ -46,5 +46,8 @@ jobs:
       - name: Build the project
         run: pnpm turbo build
 
-      - name: Run Major Project Tests
+      - name: Run Major Project B1 Tests
         run: pnpm turbo test-b1
+
+      - name: Run Major Project B3 Tests
+        run: pnpm turbo test-b3

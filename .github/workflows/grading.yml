@@ -16,7 +16,7 @@ jobs:
       DATABASE_URL: file:./dev.db
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       COURSE_ID: full-stack-development-comp3036-2026
-      PASSWORD: 123
+      PASSWORD: 123456
       JWT_SECRET: secret
       # NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       # NEXTAUTH_URL: http://127.0.0.1:3001/

@@ -11,18 +11,19 @@ datasource db {
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
-  urlId       String   @unique
+  id          Int       @id @default(autoincrement())
+  urlId       String    @unique
   title       String
   description String
   content     String
   imageUrl    String
   category    String
   tags        String
-  date        DateTime @default(now())
-  views       Int      @default(0)
-  active      Boolean  @default(true)
+  date        DateTime  @default(now())
+  views       Int       @default(0)
+  active      Boolean   @default(true)
   likes       Like[]
+  comments    Comment[]
 }
 
 model Like {
@@ -31,4 +32,33 @@ model Like {
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([postId, userIP])
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  comments     Comment[]
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  postId     Int
+  userId     Int?
+  parentId   Int?
+  authorName String
+  authorRole String    @default("user")
+  content    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  post       Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([parentId])
+  @@index([userId])
 }
