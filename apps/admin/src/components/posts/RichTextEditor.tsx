@@ -133,6 +133,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
         toolbarElement?.setAttribute("aria-label", "Formatting toolbar");
 
         const root = editor.root;
+        root.classList.add("formatted-content-body");
         root.id = id;
         root.setAttribute("aria-labelledby", labelledBy);
         root.setAttribute("aria-multiline", "true");
@@ -253,7 +254,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
     }, [id, labelledBy]);
 
     return (
-      <div data-test-id="rich-text-editor">
+      <div data-test-id="rich-text-editor" className="formatted-content">
         <div ref={editorRef} data-loading={ready ? undefined : "true"} />
       </div>
     );
