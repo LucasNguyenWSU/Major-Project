@@ -1,6 +1,11 @@
 import { BlogDetail } from "@/components/Blog/Detail";
 import { AppLayout } from "@/components/Layout/AppLayout";
-import { getActivePostByUrlId, increaseViewsByUrlId } from "@/functions/db-posts";
+import { getCommentsByPostId } from "@/functions/comments";
+import {
+  getActivePostByUrlId,
+  increaseViewsByUrlId,
+} from "@/functions/db-posts";
+import { getCurrentCommenter } from "@/utils/auth";
 
 export default async function Page({
   params,
@@ -18,10 +23,18 @@ export default async function Page({
     );
   }
   const post = await increaseViewsByUrlId(urlId);
+  const [comments, currentCommenter] = await Promise.all([
+    getCommentsByPostId(post.id),
+    getCurrentCommenter(),
+  ]);
 
   return (
     <AppLayout>
-      <BlogDetail post={post} />
+      <BlogDetail
+        post={post}
+        comments={comments}
+        currentCommenter={currentCommenter}
+      />
     </AppLayout>
   );
 }

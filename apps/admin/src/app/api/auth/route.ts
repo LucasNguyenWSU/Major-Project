@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { env } from "@repo/env/admin";
 import * as jwt from "jsonwebtoken";
 
-const PASSWORD = "123";
+const PASSWORD = "123456";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -39,4 +39,3 @@ export async function DELETE() {
 
   return response;
 }
-

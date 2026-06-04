@@ -13,7 +13,7 @@ jobs:
       CI: true
       DATABASE_URL: file:./dev.db
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PASSWORD: 123
+      PASSWORD: 123456
       JWT_SECRET: secret
       SKIP_ENV_VALIDATION: true
     runs-on: ubuntu-latest
@@ -68,10 +68,22 @@ jobs:
           timeout: 10
           max-score: 1
 
+      - name: Test Major Project B3 with Playwright
+        id: testB3
+        uses: WesternSydneyUniversity/autograding-command-grader@v2
+        continue-on-error: true
+        with:
+          working-directory: .
+          test-name: Major Project - B3
+          command: pnpm turbo test-b3
+          timeout: 10
+          max-score: 1
+
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         env:
           TESTB1_RESULTS: "${{steps.testB1.outputs.result}}"
           TESTB2_RESULTS: "${{steps.testB2.outputs.result}}"
+          TESTB3_RESULTS: "${{steps.testB3.outputs.result}}"
         with:
-          runners: testB1,testB2
+          runners: testB1,testB2,testB3

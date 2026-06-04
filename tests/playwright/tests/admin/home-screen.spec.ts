@@ -31,7 +31,7 @@ test.describe("ADMIN HOME SCREEN", () => {
       await page.goto("/");
 
       // HOME SCREEN > Authenticate the current client using a hard-coded password
-      await page.getByLabel("Password", { exact: true }).fill("123");
+      await page.getByLabel("Password", { exact: true }).fill("123456");
       await page.getByText("Sign In", { exact: true }).click();
 
       await expect(page.getByText("Admin of Full Stack Blog")).toBeVisible();

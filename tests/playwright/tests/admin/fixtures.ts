@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { test as base, type BrowserContext, type Page } from "@playwright/test";
 
-export const e2epassword = "superpassword";
+export const e2epassword = "123456";
 
 // TODO: Implement seed
 export async function seedData(...options: any[]) {}
