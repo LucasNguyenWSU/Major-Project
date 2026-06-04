@@ -26,7 +26,7 @@ setup("authenticate assignment 2", { tag: "@a2" }, async ({ playwright }) => {
 
 setup(
   "authenticate assignment 3 and major project",
-  { tag: ["@a3", "@b1"] },
+  { tag: ["@a3", "@b1", "@b2"] },
   async ({ playwright }) => {
     const authFile = ".auth/user.json";
 
