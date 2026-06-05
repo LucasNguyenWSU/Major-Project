@@ -38,13 +38,19 @@ export function LoginForm({ nextPath = "/" }: { nextPath?: string }) {
       };
 
       if (!response.ok) {
-        setError(data.error ?? "Invalid username or password");
+        setError(
+          data.error ??
+            (response.status >= 500
+              ? "Could not sign in right now. Please try again."
+              : "Invalid username or password"),
+        );
         return;
       }
 
       setPassword("");
 
       router.push(getSafeNextPath(nextPath));
+      router.refresh();
     } finally {
       setLoading(false);
     }

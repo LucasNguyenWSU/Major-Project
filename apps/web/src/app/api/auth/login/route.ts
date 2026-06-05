@@ -46,15 +46,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const user = await client.db.user.findUnique({
-    where: { username },
-    select: {
-      id: true,
-      username: true,
-      displayName: true,
-      passwordHash: true,
-    },
-  });
+  let user;
+  try {
+    user = await client.db.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        passwordHash: true,
+      },
+    });
+  } catch (error) {
+    console.error("Login database lookup failed", error);
+    return NextResponse.json(
+      { error: "Could not sign in right now. Please try again." },
+      { status: 500 },
+    );
+  }
 
   if (!user || !verifyPassword(password, user.passwordHash)) {
     return NextResponse.json(

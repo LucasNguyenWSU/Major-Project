@@ -56,7 +56,7 @@ pnpx playwright install
 
 ## Environment
 
-In all packages `apps/admin` and `packages/db` find `.env.example` files and copy them to `.env`. Set your environment variables accordingly!
+In `apps/web`, `apps/admin`, and `packages/db`, find `.env.example` files and copy them to `.env`. Set your environment variables accordingly!
 
 Required environment variables include:
 
