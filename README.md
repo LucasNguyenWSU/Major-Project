@@ -1,141 +1,34 @@
 # Assignment 2 - Blog - Client App
 
-The goal of this assignment is to implement all the client side functionality.
-Example implementation is in the image below.
+This project was originally cloned from the Assignment 2 blog application and has been developed further as a full-stack blog CMS. The original client, admin, backend, and test structure are still used, but the project now includes additional features beyond the base assignment.
+
+## Project Overview
+
+The application is a monorepo with two Next.js apps:
+
+- **apps/web** - Public blog website for reading posts, liking posts, searching, filtering, and commenting.
+- **apps/admin** - Admin website for managing posts, editing content, filtering posts, and controlling post visibility.
+
+Data is stored in PostgreSQL through Prisma. The project also includes shared packages for UI, utilities, database access, environment validation, linting, Tailwind configuration, and TypeScript configuration.
+
+## Additional Features
+
+### Rich Editor
+
+The admin create/update post screen includes a richer editing experience for post content. It supports formatted content, previewing content before saving, and preserving rich content after the post is saved.
+
+### Comment Function
+
+The public blog supports authenticated commenting. Visitors can register or log in, write comments on posts, and reply to existing comments. Comments are stored in the database and displayed on the post detail page.
+
+### Pagination
+
+Pagination has been added to both the public blog list and the admin post list. This keeps the interface usable when the database contains many posts.
 
 ## Success Criteria
 
-- ✅ All of the tests must be passing
-- ✅ You must be able to explain any code in the codebase
-
-## 👾 Requirements - Assignment 2.1 - Client
-
-> 💡Idea! Create a new issue in your repository, where you can track the completion of these items. Just copy paste them into the issue and mark them as complete as you go. Make sure you copy the source from README.md not the preview text.
-
-### HOME SCREEN
-
-- [ ] User must see only the "active" posts
-- [ ] User must see the list of blog post categories, where each category points to UI showing only posts of that category
-- [ ] User must see the list of blog post tags, where each tag points to UI showing only posts of that category
-- [ ] User must see the history of blog posts, showing month and year, where each moth, year tuple points to UI showing only posts of that category
-- [ ] Tags and history items shown are only considered from active posts
-- [ ] The list shows the following items:
-  - blog title, pointing to detail page
-  - short description
-  - date
-  - image
-  - tags
-  - likes
-  - views
-- [ ] User must be able to switch between dark and light theme with a button
-      The dark theme setting is stored in the "data-theme" attribute on html element
-- [ ] There is a search functionality that filters blogs based on string found in title or description, redirecting to search page
-
-### DETAIL SCREEN
-
-- [ ] Detail page shows the same items as list item, but the short description is replaced by formatted long description
-- [ ] Detail text is stored as Markdown, which needs to be converted to HTML
-
-### CATEGORY SCREEN
-
-- [ ] Displays posts from the category from url (e.g. /category/react)
-- [ ] Displays "0 Posts" when search does no posts have that category
-
-### HISTORY SCREEN
-
-- [ ] Displays posts from year and month specified in the url (e.g. /history/2024/12)
-- [ ] Displays "0 Posts" when no posts are from that given month and year
-
-### TAG SCREEN
-
-- [ ] Displays posts with the tag url (e.g. /tags/dev-tools)
-- [ ] Displays "0 Posts" when search does no posts have that tag
-
-### SEARCH SCREEN
-
-- [ ] Displays results based on search string stored in the query string (e.g. /search?q=Fat)
-- [ ] Displays "0 Posts" when search does not find anything
-
-## 👾 Requirements - Assignment 2.2 - Admin
-
-> 💡Idea! Create a new issue in your repository, where you can track the completion of these items. Just copy paste them into the issue and mark them as complete as you go. Make sure you copy the source from README.md not the preview text.
-
-### ADMIN HOME SCREEN
-
-- [ ] Shows Login screen if not logged
-- [ ] Shows List screen if logged
-- [ ] There must be a logout button
-- [ ] Clicking the logout button logs the user out
-- [ ] Authenticate the current client using a hard-coded password
-- [ ] Use a httpOnly cookie and name it "auth_token" to remember the signed-in state.
-
-### ADMIN LIST SCREEN
-
-- [ ] Shows both active and inactive posts
-- [ ] Article list is only accessible to logged-in users.
-- [ ] There is a filter screen that allows filtering posts by:
-  - [ ] Title or content
-  - [ ] Tags
-  - [ ] Date
-  - [ ] Visibility
-- [ ] You can combine multiple filters
-- [ ] Users can sort posts by name or creation date, both ascending and descending
-- [ ] The post list displays a list of filtered items with the following information:
-  - [ ] The list post item displays the image, title of the post
-  - [ ] The list post items display metadata such as category, tags, and "active" status.
-  - [ ] The active status is a button that, on click, just displays a message
-- [ ] Clicking on the title takes the user to the MODIFY SCREEN, allowing the user to modify the current post
-- [ ] There is a button to create new posts
-- [ ] Clicking on the "Create Post" button takes the user to the CREATE SCREEN
-
-### ADMIN CREATE and UPDATE screen
-
-Both create and update screens display the same UI, but the update screen preloads the data into fields.
-
-- [ ] Page is only accessible to logged in user
-- [ ] There must be the following fields which must be validated for errors:
-  - [ ] Title (`input, string`)
-  - [ ] Description (textarea, string, max 200 characters)
-  - [ ] Content (`textarea, markdown string`)
-  - [ ] Tag List (`input, string`) shows a comma-separated list of tags.
-  - [ ] Image URL (`input, URL`)
-- [ ] Under the Description is a "Preview" button that replaces the text area with a rendered markdown string and changes the title to "Close Preview".
-- [ ] When the preview is closed, the cursor must be in the same position as before opening the preview.
-- [ ] Under the image input is an image preview.
-- [ ] User can click on the "Save" button that displays an error ui if one of the fields is not specified or valid.
-
-## 👾 Requirements: Assignment 2.3
-
-### BACKEND / CLIENT
-
-- [ ] Data is loaded from the database backend
-- [ ] Data filtering is done server side and only filtered data is sent to client
-- [ ] Each visit of the page increases the post "views" count by one
-- [ ] User can "like" the post on the detail screen, NOT on the list screen (hint, create the `/api/likes/route.ts` route and implement the needed handlers)
-- [ ] Liking the post increases the like count by one
-- [ ] User can like the post only once (use IP)
-- [ ] User can unlike the post, decreasing the like post by one
-
-### BACKEND / ADMIN / AUTHORISATION
-
-> For these two requirements we do not have End 2 End tests and will be checked manually.
-
-- [ ] The password is checked on server in the `/api/auth` route
-- [ ] The POST method is used for login
-- [ ] The DELETE method is used for logout
-- [ ] The admin home page checks for the presence of JWT token and verifies it, if the token does not exist or is invalid, displays the login control.
-
-### BACKEND / ADMIN / LIST SCREEN
-
-- [ ] Logged in user can activate / deactivate a post clicking on the activate button, automatically saving changes
-
-### BACKEND / ADMIN / UPDATE SCREEN
-
-- [ ] Logged in user can save changes to database, if the form is validated
-
-### BACKEND / ADMIN / CREATE SCREEN
-
-- [ ] Logged in user can create a new post to the database, if the form is validated
+- All of the tests must be passing
+- You must be able to explain any code in the codebase
 
 ## Prerequisites
 
@@ -155,7 +48,7 @@ Once the pnpm is installed, in the root of the project install the packages
 pnpm i
 ```
 
-To run end to end tests you need to install headless browsers. Please run the following command in the `tests/playwright-web` directory
+To run end to end tests you need to install headless browsers. Please run the following command in the `tests/playwright` directory
 
 ```
 pnpx playwright install
@@ -164,6 +57,17 @@ pnpx playwright install
 ## Environment
 
 In all packages `apps/admin` and `packages/db` find `.env.example` files and copy them to `.env`. Set your environment variables accordingly!
+
+Required environment variables include:
+
+```
+DATABASE_URL=
+DATABASE_URL_UNPOOLED=
+PASSWORD=
+JWT_SECRET=
+```
+
+Use a dedicated test database when running Playwright tests. The seed functions used by the tests delete and recreate data.
 
 ## Running the project
 
@@ -194,13 +98,21 @@ This launches the turbo console UI similar to below, where you can swap between 
 
 ![Turbo UI](https://skillpies.s3.ap-southeast-2.amazonaws.com/courses/full-stack-development/sections/assignment-2-1-blog-client-in-advanced-react/Screenshot%202025-02-05%20at%2014.30.45.png)
 
-> ⚠️⚠️ Make sure that ALL tests pass!
+> Make sure that ALL tests pass!
 
 If you want to run the tests for second part (i.e. Assignment 2.2) or third part (i.e. Assignment 2.3), run these commands:
 
 ```
 turbo test-2 // or
 turbo test-3
+```
+
+For the additional major project features, run:
+
+```
+turbo test-b1 // pagination
+turbo test-b2 // rich editor
+turbo test-b3 // comments
 ```
 
 If you want to run all tests, please run
@@ -249,8 +161,7 @@ Contains the following packages with shared code and configurations:
 
 Contains the following test applications:
 
-- **tests/playwright-admin** - End to End tests for the admin application
-- **tests/playwright-web** - End to End tests for the client application
+- **tests/playwright** - End to End tests for the admin and client applications
 - **tests/storybook** - Configured storybook instance for development and testing of React components in isolation
 
 ## Application Structure
